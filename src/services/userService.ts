@@ -1,4 +1,5 @@
 import { User } from "../models/types.js";
+import { v4 as uuid } from 'uuid';
 
 const users: User[] = [
   { id: "u1", name: "Alice" },
@@ -10,8 +11,12 @@ export const UserService = {
 
   getById: (id: string) => users.find(u => u.id === id),
 
-  create: (user: User) => {
-    users.push(user);
-    return user;
+  create: (name: string) => {
+    const newUser: User = {
+      id: uuid(),
+      name
+    }
+    users.push(newUser);
+    return newUser;
   }
 };

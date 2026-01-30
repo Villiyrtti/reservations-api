@@ -1,4 +1,5 @@
 import { Reservation } from "../models/types.js";
+import { v4 as uuid } from 'uuid';
 
 const reservations: Reservation[] = [
   {
@@ -38,29 +39,36 @@ export const ReservationService = {
   getByRoomId: (roomId: string) =>
     reservations.filter(r => r.roomId === roomId),
 
-  create: (reservation: Reservation) => {
+  create: (userId: string, roomId: string, startTime: Date, endTime: Date) => {
     const now = new Date();
 
-    if (reservation.startTime >= reservation.endTime) {
+    if (startTime >= endTime) {
       throw new Error("End time must be after start time");
     }
 
-    if (reservation.startTime < now) {
+    if (startTime < now) {
       throw new Error("Cannot create reservation in the past");
     }
 
     if (
       isOverlapping(
-        reservation.roomId,
-        reservation.startTime,
-        reservation.endTime
+        roomId,
+        startTime,
+        endTime
       )
     ) {
       throw new Error("Room already reserved for that time");
     }
 
-    reservations.push(reservation);
-    return reservation;
+    const newReservation: Reservation = {
+      id: uuid(),
+      userId,
+      roomId,
+      startTime,
+      endTime
+    }
+    reservations.push(newReservation);
+    return newReservation;
   },
 
 

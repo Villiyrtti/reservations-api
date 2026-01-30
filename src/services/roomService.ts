@@ -1,4 +1,5 @@
 import { Room } from "../models/types.js";
+import { v4 as uuid } from 'uuid';
 
 const rooms: Room[] = [
   { id: "room1", name: "Conference Room A" },
@@ -10,8 +11,12 @@ export const RoomService = {
 
   getById: (id: string) => rooms.find(r => r.id === id),
 
-  create: (room: Room) => {
-    rooms.push(room);
-    return room;
+  create: (name: string) => {
+    const newRoom: Room = {
+      id: uuid(),
+      name
+    };
+    rooms.push(newRoom);
+    return newRoom;
   }
 };

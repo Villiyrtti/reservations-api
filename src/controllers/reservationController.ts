@@ -3,6 +3,12 @@ import { ReservationService } from "../services/reservationService.js";
 import { ByIdRequest } from "../models/types.js";
 
 type CancelRequest = Request<{ id: string }, any, any, { userId: string }>
+type CreateReservationRequest = Request<any, any, any, {
+  userId: string;
+  roomId: string;
+  startTime: Date;
+  endTime: Date;
+}>;
 
 export const ReservationController = {
   getAll: (_: Request, res: Response) => {
@@ -15,13 +21,15 @@ export const ReservationController = {
     res.json(reservation);
   },
 
-  create: (req: Request, res: Response) => {
+  create: (req: CreateReservationRequest, res: Response) => {
+    const { userId, roomId, startTime, endTime } = req.body;
     try {
-      const reservation = ReservationService.create({
-        ...req.body,
-        startTime: new Date(req.body.startTime),
-        endTime: new Date(req.body.endTime)
-      });
+      const reservation = ReservationService.create(
+        userId,
+        roomId,
+        new Date(startTime),
+        new Date(endTime)
+      );
       res.status(201).json(reservation);
     } catch (err: any) {
       res.status(400).send(err.message);

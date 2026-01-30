@@ -3,6 +3,8 @@ import { RoomService } from "../services/roomService.js";
 import { ReservationService } from "../services/reservationService.js";
 import { ByIdRequest } from "../models/types.js";
 
+type CreateRoomRequest = Request<any, any, any, { name: string }>;
+
 export const RoomController = {
   getAll: (_: Request, res: Response) => {
     res.json(RoomService.getAll());
@@ -14,8 +16,9 @@ export const RoomController = {
     res.json(room);
   },
 
-  create: (req: Request, res: Response) => {
-    const room = RoomService.create(req.body);
+  create: (req: CreateRoomRequest, res: Response) => {
+    const { name } = req.body;
+    const room = RoomService.create(name);
     res.status(201).json(room);
   },
 

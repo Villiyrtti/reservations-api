@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { UserService } from "../services/userService.js";
 import { ByIdRequest } from "../models/types.js";
 
+type CreateRoomRequest = Request<any, any, any, { name: string }>;
+
 export const UserController = {
   getAll: (_: Request, res: Response) => {
     res.json(UserService.getAll());
@@ -13,8 +15,9 @@ export const UserController = {
     res.json(user);
   },
 
-  create: (req: Request, res: Response) => {
-    const user = UserService.create(req.body);
+  create: (req: CreateRoomRequest, res: Response) => {
+    const { name } = req.body;
+    const user = UserService.create(name);
     res.status(201).json(user);
   }
 };
