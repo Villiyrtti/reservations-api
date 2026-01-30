@@ -12,6 +12,9 @@ export const ReservationService = {
   getByRoomId: (roomId: string) =>
     reservations.filter(reservation => reservation.roomId === roomId),
 
+  getByUserId: (userId: string) =>
+    reservations.filter(reservation => reservation.createdById === userId),
+
   create: (createdById: string, roomId: string, startTime: string, endTime: string, title?: string) => {
     const newStartTime = validateDate(startTime);
     const newEndTime = validateDate(endTime);

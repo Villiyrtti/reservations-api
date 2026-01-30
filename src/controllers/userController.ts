@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/userService.js";
+import { ReservationService } from "../services/reservationService.js";
 import { ByIdRequest } from "../models/types.js";
 
 type CreateRoomRequest = Request<any, any, { fullName: string, email: string }>;
@@ -16,6 +17,11 @@ export const UserController = {
       return res.status(404).send("User not found");
     };
     res.json(user);
+  },
+
+  getUserReservations: (req: ByIdRequest, res: Response) => {
+      const userId = req.params.id;
+      res.json(ReservationService.getByUserId(userId));
   },
 
   create: (req: CreateRoomRequest, res: Response) => {
