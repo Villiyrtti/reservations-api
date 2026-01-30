@@ -17,6 +17,10 @@ export const UserController = {
 
   create: (req: CreateRoomRequest, res: Response) => {
     const { name } = req.body;
+    if(!name) {
+      return res.status(400).send("Missing fields");
+    };
+
     const user = UserService.create(name);
     res.status(201).json(user);
   }

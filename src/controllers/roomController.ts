@@ -18,13 +18,16 @@ export const RoomController = {
 
   create: (req: CreateRoomRequest, res: Response) => {
     const { name } = req.body;
+    if(!name) {
+      return res.status(400).send("Missing fields");
+    };
+
     const room = RoomService.create(name);
     res.status(201).json(room);
   },
 
   getReservations: (req: ByIdRequest, res: Response) => {
-    res.json(
-      ReservationService.getByRoomId(req.params.id)
-    );
+    const roomId = req.params.id;
+    res.json(ReservationService.getByRoomId(roomId));
   }
 };

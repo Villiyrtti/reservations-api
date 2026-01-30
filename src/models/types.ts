@@ -19,3 +19,8 @@ export type Reservation = {
 }
 
 export type ByIdRequest = Request<{ id: string }>;
+export type ErrorResponse = {
+  message: string;
+  status?: number;
+  details?: string;
+};

@@ -1,4 +1,4 @@
-import { Reservation } from "../models/types.js";
+import { Reservation, ErrorResponse } from "../models/types.js";
 import { v4 as uuid } from 'uuid';
 
 const reservations: Reservation[] = [
@@ -43,21 +43,21 @@ export const ReservationService = {
     const now = new Date();
 
     if (startTime >= endTime) {
-      throw new Error("End time must be after start time");
+      const error: ErrorResponse = new Error("End time must be after start time");
+      error.status = 400;
+      throw error;
     }
 
     if (startTime < now) {
-      throw new Error("Cannot create reservation in the past");
+      const error: ErrorResponse = new Error("Cannot create reservation in the past");
+      error.status = 400;
+      throw error;
     }
 
-    if (
-      isOverlapping(
-        roomId,
-        startTime,
-        endTime
-      )
-    ) {
-      throw new Error("Room already reserved for that time");
+    if (isOverlapping(roomId, startTime, endTime)) {
+      const error: ErrorResponse = new Error("Room already reserved for that time");
+      error.status = 409;
+      throw error;
     }
 
     const newReservation: Reservation = {
@@ -76,11 +76,15 @@ export const ReservationService = {
     const index = reservations.findIndex(r => r.id === reservationId);
 
     if (index === -1) {
-      throw new Error("Reservation not found");
+      const error: ErrorResponse = new Error("Reservation not found");
+      error.status = 404;
+      throw error;
     }
 
     if (reservations[index].userId !== userId) {
-      throw new Error("User not allowed to cancel this reservation");
+      const error: ErrorResponse = new Error("User not allowed to cancel this reservation");
+      error.status = 403;
+      throw error;
     }
 
     reservations.splice(index, 1);
