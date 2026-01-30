@@ -7,10 +7,10 @@ export const ReservationService = {
   getAll: () => reservations,
 
   getById: (id: string) =>
-    reservations.find(r => r.id === id),
+    reservations.find(reservation => reservation.id === id),
 
   getByRoomId: (roomId: string) =>
-    reservations.filter(r => r.roomId === roomId),
+    reservations.filter(reservation => reservation.roomId === roomId),
 
   create: (createdById: string, roomId: string, startTime: string, endTime: string, title?: string) => {
     const newStartTime = validateDate(startTime);
@@ -55,22 +55,19 @@ export const ReservationService = {
     return newReservation;
   },
 
-
   cancel: (reservationId: string, userId: string) => {
-    const index = reservations.findIndex(r => r.id === reservationId);
+    const index = reservations.findIndex(reservation => reservation.id === reservationId);
 
     if (index === -1) {
       const error: ErrorResponse = new Error("Reservation not found");
       error.status = 404;
       throw error;
-    }
-
-    if (reservations[index].createdById !== userId) {
+    } else if (reservations[index].createdById !== userId) {
       const error: ErrorResponse = new Error("User not allowed to cancel this reservation");
       error.status = 403;
       throw error;
+    } else {
+      reservations.splice(index, 1);
     }
-
-    reservations.splice(index, 1);
   }
 };

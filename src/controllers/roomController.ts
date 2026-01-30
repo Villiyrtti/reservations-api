@@ -11,8 +11,11 @@ export const RoomController = {
   },
 
   getById: (req: ByIdRequest, res: Response) => {
-    const room = RoomService.getById(req.params.id);
-    if (!room) return res.status(404).send("Room not found");
+    const roomId = req.params.id
+    const room = RoomService.getById(roomId);
+    if (!room) {
+      return res.status(404).send("Room not found");
+    }
     res.json(room);
   },
 
@@ -26,7 +29,7 @@ export const RoomController = {
     res.status(201).json(room);
   },
 
-  getReservations: (req: ByIdRequest, res: Response) => {
+  getRoomReservations: (req: ByIdRequest, res: Response) => {
     const roomId = req.params.id;
     res.json(ReservationService.getByRoomId(roomId));
   }

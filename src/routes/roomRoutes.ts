@@ -6,6 +6,6 @@ const router = Router();
 router.get("/", RoomController.getAll);
 router.get("/:id", RoomController.getById);
 router.post("/", RoomController.create);
-router.get("/:id/reservations", RoomController.getReservations);
+router.get("/:id/reservations", RoomController.getRoomReservations);
 
 export default router;

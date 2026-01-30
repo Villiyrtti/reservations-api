@@ -10,8 +10,11 @@ export const UserController = {
   },
 
   getById: (req: ByIdRequest, res: Response) => {
-    const user = UserService.getById(req.params.id);
-    if (!user) return res.status(404).send("User not found");
+    const userId = req.params.id;
+    const user = UserService.getById(userId);
+    if (!user) {
+      return res.status(404).send("User not found");
+    };
     res.json(user);
   },
 

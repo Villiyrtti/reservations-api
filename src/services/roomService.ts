@@ -5,7 +5,7 @@ import { rooms } from "../database/data.js";
 export const RoomService = {
   getAll: () => rooms,
 
-  getById: (id: string) => rooms.find(r => r.id === id),
+  getById: (id: string) => rooms.find(room => room.id === id),
 
   create: (name: string) => {
     const now = new Date();

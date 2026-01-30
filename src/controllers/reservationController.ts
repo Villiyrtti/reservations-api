@@ -19,8 +19,11 @@ export const ReservationController = {
   },
 
   getById: (req: ByIdRequest, res: Response) => {
-    const reservation = ReservationService.getById(req.params.id);
-    if (!reservation) return res.status(404).send("Reservation not found");
+    const reservationId = req.params.id;
+    const reservation = ReservationService.getById(reservationId);
+    if (!reservation) {
+      return res.status(404).send("Reservation not found");
+    }
     res.json(reservation);
   },
 
@@ -53,10 +56,7 @@ export const ReservationController = {
     const userId = req.body.userId;
 
     try {
-      ReservationService.cancel(
-        reservationId,
-        userId
-      );
+      ReservationService.cancel(reservationId, userId);
       res.status(204).send();
     } catch (error: ErrorResponse | any) {
       res.status(error.status? error.status : 400).send(error.message);

@@ -5,7 +5,7 @@ import { users } from "../database/data.js";
 export const UserService = {
   getAll: () => users,
 
-  getById: (id: string) => users.find(u => u.id === id),
+  getById: (id: string) => users.find(user => user.id === id),
 
   create: (fullName: string, email: string) => {
     const now = new Date();
