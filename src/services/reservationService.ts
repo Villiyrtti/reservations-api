@@ -15,13 +15,27 @@ export const ReservationService = {
   getByUserId: (userId: string) =>
     reservations.filter(reservation => reservation.createdById === userId),
 
+  getByDateTimeRange: (startTime?: string, endTime?: string) => {
+    const start = startTime && validateDate(startTime);
+    const end = endTime && validateDate(endTime);
+
+    if (start && end && start < end) {
+      return reservations.filter((reservation) => new Date(reservation.startTime) >= start && new Date(reservation.endTime) <= end);
+    } else if (start) {
+      return reservations.filter((reservation) => new Date(reservation.startTime) >= start)
+    } else if (end) {
+      return reservations.filter((reservation) => new Date(reservation.endTime) <= end)
+    }
+    return [];
+  },
+
   create: (createdById: string, roomId: string, startTime: string, endTime: string, title?: string) => {
     const newStartTime = validateDate(startTime);
     const newEndTime = validateDate(endTime);
     const now = new Date();
 
     if (!newEndTime || !newStartTime || newStartTime >= newEndTime) {
-      const error: ErrorResponse = new Error("Invalid date range");
+      const error: ErrorResponse = new Error("Invalid time range");
       error.status = 400;
       throw error;
     }

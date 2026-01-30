@@ -21,8 +21,18 @@ type ModifyReservationRequest = Request<{ id: string }, any, {
 }>;
 
 export const ReservationController = {
-  getAll: (_: Request, res: Response) => {
-    res.json(ReservationService.getAll());
+  getAll: (req: Request<any, any, any, { startTime?: string, endTime?: string }>, res: Response) => {
+    const { startTime, endTime } = req.query;
+    if (startTime || endTime) {
+      try {
+        const reservations = ReservationService.getByDateTimeRange(startTime, endTime);
+        res.status(201).json(reservations);
+      } catch (error: ErrorResponse | any) {
+        res.status(error.status? error.status : 400).send(error.message);
+      }
+    } else {
+      res.json(ReservationService.getAll());
+    }
   },
 
   getById: (req: ByIdRequest, res: Response) => {
