@@ -1,17 +1,21 @@
-export interface User {
+import { Request } from "express";
+
+export type User = {
   id: string;
   name: string;
 }
 
-export interface Room {
+export type Room = {
   id: string;
   name: string;
 }
 
-export interface Reservation {
+export type Reservation = {
   id: string;
   userId: string;
   roomId: string;
   startTime: Date;
   endTime: Date;
 }
+
+export type ByIdRequest = Request<{ id: string }>;

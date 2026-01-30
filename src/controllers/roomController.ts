@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import { RoomService } from "../services/roomService.js";
 import { ReservationService } from "../services/reservationService.js";
+import { ByIdRequest } from "../models/types.js";
 
 export const RoomController = {
   getAll: (_: Request, res: Response) => {
     res.json(RoomService.getAll());
   },
 
-  getById: (req: Request, res: Response) => {
+  getById: (req: ByIdRequest, res: Response) => {
     const room = RoomService.getById(req.params.id);
     if (!room) return res.status(404).send("Room not found");
     res.json(room);
@@ -18,7 +19,7 @@ export const RoomController = {
     res.status(201).json(room);
   },
 
-  getReservations: (req: Request, res: Response) => {
+  getReservations: (req: ByIdRequest, res: Response) => {
     res.json(
       ReservationService.getByRoomId(req.params.id)
     );

@@ -1,12 +1,15 @@
 import { Request, Response } from "express";
 import { ReservationService } from "../services/reservationService.js";
+import { ByIdRequest } from "../models/types.js";
+
+type CancelRequest = Request<{ id: string }, any, any, { userId: string }>
 
 export const ReservationController = {
   getAll: (_: Request, res: Response) => {
     res.json(ReservationService.getAll());
   },
 
-  getById: (req: Request, res: Response) => {
+  getById: (req: ByIdRequest, res: Response) => {
     const reservation = ReservationService.getById(req.params.id);
     if (!reservation) return res.status(404).send("Reservation not found");
     res.json(reservation);
@@ -25,7 +28,7 @@ export const ReservationController = {
     }
   },
 
-  cancel: (req: Request, res: Response) => {
+  cancel: (req: CancelRequest, res: Response) => {
     try {
       ReservationService.cancel(
         req.params.id,
