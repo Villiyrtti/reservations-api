@@ -2,20 +2,28 @@ import { Request } from "express";
 
 export type User = {
   id: string;
-  name: string;
+  fullName: string;
+  email: string;
+  createdAt: string;
+  lastUpdatedAt: string;
 }
 
 export type Room = {
   id: string;
   name: string;
+  createdAt: string;
+  lastUpdatedAt: string;
 }
 
 export type Reservation = {
   id: string;
-  userId: string;
+  createdById: string;
   roomId: string;
   startTime: string;
   endTime: string;
+  createdAt: string;
+  lastUpdatedAt: string;
+  title?: string;
 }
 
 export type ByIdRequest = Request<{ id: string }>;

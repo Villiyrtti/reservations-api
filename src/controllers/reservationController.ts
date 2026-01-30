@@ -5,11 +5,12 @@ import { ReservationService } from "../services/reservationService.js";
 import { ByIdRequest, ErrorResponse } from "../models/types.js";
 
 type CancelRequest = Request<{ id: string }, any, any, { userId: string }>
-type CreateReservationRequest = Request<any, any, any, {
-  userId: string;
+type CreateReservationRequest = Request<any, any, {
+  createdById: string;
   roomId: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
+  title?: string;
 }>;
 
 export const ReservationController = {
@@ -24,21 +25,22 @@ export const ReservationController = {
   },
 
   create: (req: CreateReservationRequest, res: Response) => {
-    const { userId, roomId, startTime, endTime } = req.body;
-    if (!userId || !roomId || !startTime || !endTime) {
+    const { createdById, roomId, startTime, endTime, title } = req.body;
+    if (!createdById || !roomId || !startTime || !endTime) {
       return res.status(400).send("Missing fields");
     };
 
-    if (!UserService.getById(userId) || !RoomService.getById(roomId)) {
+    if (!UserService.getById(createdById) || !RoomService.getById(roomId)) {
       return res.status(404).send("User or room not found");
     };
 
     try {
       const reservation = ReservationService.create(
-        userId,
+        createdById,
         roomId,
         startTime,
-        endTime
+        endTime,
+        title
       );
       res.status(201).json(reservation);
     } catch (error: ErrorResponse | any) {

@@ -3,7 +3,7 @@ import { RoomService } from "../services/roomService.js";
 import { ReservationService } from "../services/reservationService.js";
 import { ByIdRequest } from "../models/types.js";
 
-type CreateRoomRequest = Request<any, any, any, { name: string }>;
+type CreateRoomRequest = Request<any, any, { name: string }>;
 
 export const RoomController = {
   getAll: (_: Request, res: Response) => {

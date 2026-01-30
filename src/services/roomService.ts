@@ -1,10 +1,6 @@
 import { Room } from "../models/types.js";
 import { v4 as uuid } from 'uuid';
-
-const rooms: Room[] = [
-  { id: "room1", name: "Conference Room A" },
-  { id: "room2", name: "Conference Room B" }
-];
+import { rooms } from "../database/data.js";
 
 export const RoomService = {
   getAll: () => rooms,
@@ -12,9 +8,12 @@ export const RoomService = {
   getById: (id: string) => rooms.find(r => r.id === id),
 
   create: (name: string) => {
+    const now = new Date();
     const newRoom: Room = {
       id: uuid(),
-      name
+      name,
+      createdAt: now.toISOString(),
+      lastUpdatedAt: now.toISOString()
     };
     rooms.push(newRoom);
     return newRoom;

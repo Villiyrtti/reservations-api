@@ -1,21 +1,21 @@
 import { User } from "../models/types.js";
 import { v4 as uuid } from 'uuid';
-
-const users: User[] = [
-  { id: "u1", name: "Alice" },
-  { id: "u2", name: "Bob" }
-];
+import { users } from "../database/data.js";
 
 export const UserService = {
   getAll: () => users,
 
   getById: (id: string) => users.find(u => u.id === id),
 
-  create: (name: string) => {
+  create: (fullName: string, email: string) => {
+    const now = new Date();
     const newUser: User = {
       id: uuid(),
-      name
-    }
+      fullName,
+      email,
+      createdAt: now.toISOString(),
+      lastUpdatedAt: now.toISOString()
+    };
     users.push(newUser);
     return newUser;
   }

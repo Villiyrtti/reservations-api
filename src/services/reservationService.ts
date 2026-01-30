@@ -1,23 +1,7 @@
 import { Reservation, ErrorResponse } from "../models/types.js";
 import { v4 as uuid } from 'uuid';
 import { validateDate, isOverlapping } from "../utils.js";
-
-const reservations: Reservation[] = [
-  {
-    id: "res1",
-    userId: "u1",
-    roomId: "room1",
-    startTime: "2026-01-01T09:00:00Z",
-    endTime: "2026-01-01T10:00:00Z"
-  },
-  {
-    id: "res2",
-    userId: "u2",
-    roomId: "room2",
-    startTime: "2026-01-01T11:00:00Z",
-    endTime: "2026-01-01T12:00:00Z"
-  }
-];
+import { reservations } from "../database/data.js";
 
 export const ReservationService = {
   getAll: () => reservations,
@@ -28,11 +12,10 @@ export const ReservationService = {
   getByRoomId: (roomId: string) =>
     reservations.filter(r => r.roomId === roomId),
 
-  create: (userId: string, roomId: string, startTime: string, endTime: string) => {
+  create: (createdById: string, roomId: string, startTime: string, endTime: string, title?: string) => {
     const newStartTime = validateDate(startTime);
     const newEndTime = validateDate(endTime);
     const now = new Date();
-    console.log(now)
 
     if (!newEndTime || !newStartTime || newStartTime >= newEndTime) {
       const error: ErrorResponse = new Error("Invalid date range");
@@ -60,10 +43,13 @@ export const ReservationService = {
 
     const newReservation: Reservation = {
       id: uuid(),
-      userId,
+      createdById,
       roomId,
       startTime: newStartTime.toISOString(),
-      endTime: newEndTime.toISOString()
+      endTime: newEndTime.toISOString(),
+      title,
+      createdAt: now.toISOString(),
+      lastUpdatedAt: now.toISOString()
     }
     reservations.push(newReservation);
     return newReservation;
@@ -79,7 +65,7 @@ export const ReservationService = {
       throw error;
     }
 
-    if (reservations[index].userId !== userId) {
+    if (reservations[index].createdById !== userId) {
       const error: ErrorResponse = new Error("User not allowed to cancel this reservation");
       error.status = 403;
       throw error;
