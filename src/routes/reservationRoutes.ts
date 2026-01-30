@@ -6,6 +6,7 @@ const router = Router();
 router.get("/", ReservationController.getAll);
 router.get("/:id", ReservationController.getById);
 router.post("/", ReservationController.create);
+router.patch("/:id", ReservationController.modifyReservationById);
 router.delete("/:id", ReservationController.cancel);
 
 export default router;

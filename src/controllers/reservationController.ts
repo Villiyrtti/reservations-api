@@ -12,6 +12,13 @@ type CreateReservationRequest = Request<any, any, {
   endTime: string;
   title?: string;
 }>;
+type ModifyReservationRequest = Request<{ id: string }, any, {
+  userId: string;
+  roomId?: string;
+  startTime?: string;
+  endTime?: string;
+  title?: string;
+}>;
 
 export const ReservationController = {
   getAll: (_: Request, res: Response) => {
@@ -46,6 +53,29 @@ export const ReservationController = {
         title
       );
       res.status(201).json(reservation);
+    } catch (error: ErrorResponse | any) {
+      res.status(error.status? error.status : 400).send(error.message);
+    }
+  },
+
+  modifyReservationById: (req: ModifyReservationRequest, res: Response) => {
+    const reservationId = req.params.id;
+    const { userId, roomId, startTime, endTime, title } = req.body;
+
+    if (!userId) {
+      return res.status(400).send("Missing userId field");
+    }
+
+    try {
+      const modifiedReservation = ReservationService.modifyReservation(
+        reservationId,
+        userId,
+        roomId,
+        startTime,
+        endTime,
+        title
+      );
+      res.status(200).json(modifiedReservation);
     } catch (error: ErrorResponse | any) {
       res.status(error.status? error.status : 400).send(error.message);
     }

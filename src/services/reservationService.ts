@@ -29,13 +29,13 @@ export const ReservationService = {
       throw error;
     }
 
-    const overlapping: boolean = reservations.some((reservation) => {
+    const overlap: boolean = reservations.some((reservation) => {
       if (roomId === reservation.roomId) {
         return isOverlapping(newStartTime, newEndTime, new Date(reservation.startTime), new Date(reservation.endTime));
       };
     });
 
-    if (overlapping) {
+    if (overlap) {
       const error: ErrorResponse = new Error("Room already reserved for that time");
       error.status = 409;
       throw error;
@@ -53,6 +53,67 @@ export const ReservationService = {
     }
     reservations.push(newReservation);
     return newReservation;
+  },
+
+  modifyReservation: (reservationId: string, userId: string, roomId?: string, startTime?: string, endTime?: string, title?: string) => {
+    const matchingReservation = reservations.find((reservation) => reservation.id === reservationId);
+    const now = new Date();
+
+    if (!matchingReservation) {
+      const error: ErrorResponse = new Error("Reservation not found");
+      error.status = 404;
+      throw error;
+    };
+
+    if (matchingReservation.createdById !== userId) {
+      const error: ErrorResponse = new Error("User not allowed to cancel this reservation");
+      error.status = 403;
+      throw error;
+    };
+
+    if (new Date(matchingReservation.startTime) < now) {
+      const error: ErrorResponse = new Error("Cannot modify past reservations");
+      error.status = 400;
+      throw error;
+    }
+
+    const modifiedStart = startTime && validateDate(startTime) || new Date(matchingReservation.startTime);
+    const modifiedEnd = endTime && validateDate(endTime) || new Date(matchingReservation.endTime);
+
+    if ((startTime && !validateDate(startTime)) || (endTime && !validateDate(endTime)) || modifiedStart > modifiedEnd) {
+      throw new Error("Invalid date parameters");
+    };
+
+    if (modifiedStart < now) {
+      const error: ErrorResponse = new Error("Cannot modify reservation to start in the past");
+      error.status = 400;
+      throw error;
+    }
+
+    const overlap: boolean = reservations.some((reservation) => {
+      if ((roomId || matchingReservation.roomId) === reservation.roomId) {
+        return isOverlapping(modifiedStart, modifiedEnd, new Date(reservation.startTime), new Date(reservation.endTime));
+      };
+    });
+
+    if (overlap) {
+      const error: ErrorResponse = new Error(`Room ${(roomId || matchingReservation.roomId)} is already reserved for that time`);
+      error.status = 409;
+      throw error;
+    }
+
+    const modifiedReservation: Reservation = {
+        ...matchingReservation,
+        roomId: roomId || matchingReservation.roomId,
+        startTime: modifiedStart.toISOString(),
+        endTime: modifiedEnd.toISOString(),
+        title: title || matchingReservation.title,
+        lastUpdatedAt: now.toISOString()
+      };
+
+    const index = reservations.findIndex(reservation => reservation.id === reservationId);
+    reservations.splice(index, 1, modifiedReservation);
+    return modifiedReservation;
   },
 
   cancel: (reservationId: string, userId: string) => {
