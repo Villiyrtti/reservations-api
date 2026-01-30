@@ -37,8 +37,8 @@ export const ReservationController = {
       const reservation = ReservationService.create(
         userId,
         roomId,
-        new Date(startTime),
-        new Date(endTime)
+        startTime,
+        endTime
       );
       res.status(201).json(reservation);
     } catch (error: ErrorResponse | any) {

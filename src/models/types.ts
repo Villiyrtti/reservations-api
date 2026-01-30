@@ -14,8 +14,8 @@ export type Reservation = {
   id: string;
   userId: string;
   roomId: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
 }
 
 export type ByIdRequest = Request<{ id: string }>;
