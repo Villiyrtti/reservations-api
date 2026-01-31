@@ -139,7 +139,7 @@ npm start
 | Name          | Type    | Description                                    |
 | -----------   | ------- | --------------------------------------------   |
 | id            | string  | room ID                                        | 
-| name          | string  | rooma name                                     |
+| name          | string  | rooms name                                     |
 | createdAt     | string  | UTC time of when reservation was created       |
 | lastUpdatedAt | string  | UTC time of reservation last has been updated  |
 
@@ -147,12 +147,25 @@ npm start
 
 ## Example Requests
 
-### GET /reservations
-Get all reservations and with query parameters return a filtered list
+### Get all reservations or with query parameters return a filtered list
 `startTime` and `endTime` are optional query parameters
 
-### POST /reservations
-Create a new request
+```json
+GET /reservations?startTime=2026-01-31
+[
+    {
+        "id": "res2",
+        "createdById": "user2",
+        "roomId": "room2",
+        "startTime": "2026-02-03T13:00:00Z",
+        "endTime": "2026-02-03T14:00:00Z",
+        "createdAt": "2026-01-30T13:00:00Z",
+        "lastUpdatedAt": "2026-01-30T13:00:00Z"
+    }
+]
+```
+
+### Create a new request
 `createdById`, `roomId`, `startTime` and `endTime` are required in request body
 
 ```json
@@ -178,11 +191,11 @@ Response
 }
 ```
 
-### PATCH /reservations/res2
-Modify existing reservation
+### Modify existing reservation
 `userId` is required in request body
 
 ```json
+PATCH /reservations/res2
 {
     "userId": "user2",
     "startTime": "2026-01-31T10:00:00",
@@ -203,21 +216,21 @@ Response
 }
 ```
 
-### DELETE /reservations/res2
-Delete reservation (only creator can delete it)
+### Delete reservation (only creator can delete it)
 `userId` is required in request body
 
 ```json
+DELETE /reservations/res2
 {
     "userId": "user2"
 }
 ```
 
-### POST /users
-Create new user
+### Create new user
 `fullName` and `email` are required in request body
 
 ```json
+POST /users
 {
     "fullName": "Tiina Lumi",
     "email": "tiina.lumi@mail.com"
@@ -233,11 +246,11 @@ Response
 }
 ```
 
-### POST /rooms
-Create new room
+### Create new room
 `name` is required in request body
 
 ```json
+POST /rooms
 {
     "name": "Conference room"
 }
