@@ -5,6 +5,7 @@ A simple RESTful API for managing meeting room reservations.
 Built with **TypeScript**, **Express**, and **ES Modules**, using an **in-memory database** for simplicity and easy testing.
 
 #### Assignment requirements
+
 * Create a API for handling meeting room reservations
 * User can create reservations
 * User can cancel reservation
@@ -15,6 +16,7 @@ Built with **TypeScript**, **Express**, and **ES Modules**, using an **in-memory
 * Starting time needs to be before ending time in the reservation
 
 #### Additional functions added to the API
+
 * Rooms and users can be created
 * Rooms, users and reservations can be searched with ID
 * User can modify their reservations
