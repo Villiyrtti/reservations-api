@@ -4,6 +4,28 @@ A simple RESTful API for managing meeting room reservations.
 
 Built with **TypeScript**, **Express**, and **ES Modules**, using an **in-memory database** for simplicity and easy testing.
 
+### Assignment requirements
+* Create a API for handling meeting room reservations
+* User can create reservations
+* User can cancel reservation
+* List reservations by room
+
+* Reservations cannot overlap
+* Reservations cannot be created to the past
+* Starting time needs to be before ending time in the reservation
+
+### Additional functions added to the API
+* Rooms and users can be created
+* Rooms, users and reservations can be searched with ID
+* User can modify their reservations
+* List reservations by user
+* Reservations can be filtered by starting time and ending time
+
+* DateTimes is saved to API as a ISO string
+* Canceling reservation is restricted to only its creator
+* User, Room and Resrvation objects contain `lastUpdatedAt` property which is updated to present time when PATCH request is done succesfully (currently only implemented to reservations)
+* Modified reservations cannot be moved to the past
+* API will ignore unsupported fields with request calls
 ---
 
 ## Features
