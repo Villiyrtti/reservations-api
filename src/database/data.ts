@@ -44,8 +44,8 @@ const reservations: Reservation[] = [
     id: "res2",
     createdById: "user2",
     roomId: "room2",
-    startTime: "2026-01-31T13:00:00Z",
-    endTime: "2026-01-31T14:00:00Z",
+    startTime: "2026-02-03T13:00:00Z",
+    endTime: "2026-02-03T14:00:00Z",
     createdAt: "2026-01-30T13:00:00Z",
     lastUpdatedAt: "2026-01-30T13:00:00Z"
   }

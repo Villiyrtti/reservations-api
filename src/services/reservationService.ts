@@ -114,7 +114,7 @@ export const ReservationService = {
     });
 
     if (overlap) {
-      const error: ErrorResponse = new Error(`Room ${(roomId || matchingReservation.roomId)} is already reserved for that time`);
+      const error: ErrorResponse = new Error("Room is already reserved for that time");
       error.status = 409;
       throw error;
     }

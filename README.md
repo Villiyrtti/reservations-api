@@ -6,21 +6,18 @@ Built with **TypeScript**, **Express**, and **ES Modules**, using an **in-memory
 
 ---
 
-## 🚀 Features
+## Features
 
 - Create users, rooms, and reservations
-- Prevent overlapping reservations in the same room
-- Prevent reservations in the past
+- Modify reservations starting and ending time, room location or reservation title
+- Prevent overlapping reservations in the same room while creating new or modifying reservations
+- Prevent creating or modifying reservations in the past
 - Users can only cancel their own reservations
-- Fetch reservations by room
-- Clean architecture:
-  - Routes
-  - Controllers (request/response)
-  - Services (business logic + data)
+- Fetch reservations by roomID or by userID
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
 - Node.js
 - TypeScript
@@ -30,22 +27,7 @@ Built with **TypeScript**, **Express**, and **ES Modules**, using an **in-memory
 
 ---
 
-## 📁 Project Structure
-
-```
-
-src/
-├─ app.ts
-├─ routes/
-├─ controllers/
-├─ services/
-└─ models/
-
-````
-
----
-
-## 📦 Installation
+## Installation
 
 ```bash
 npm install
@@ -53,7 +35,7 @@ npm install
 
 ---
 
-## ▶️ Running the App
+## Running the App
 
 ### Development mode (with hot reload)
 
@@ -69,7 +51,7 @@ http://localhost:3000
 
 ---
 
-## 🏗 Build & Run (Production-like)
+## Build & Run (Production-like)
 
 ```bash
 npm run build
@@ -78,15 +60,24 @@ npm start
 
 ---
 
-## 🔗 API Endpoints
+## Notes & Limitations
+
+* Data is stored **in memory** — restarting the server resets everything
+* Currently only deleting reservations is possible, for future development also adding deletion of users and rooms would be ideal. This could be implemented alongside with authorization (role based access - admin/user) and creating more restrictions who can delete or create new items
+* Additionally modifying is only implemented for reservations
+* No authentication middleware (userId is passed in request body)
+* API will ignore unsupported fields
+
+## API Endpoints
 
 ### Users
 
-| Method | Endpoint     | Description    |
-| ------ | ------------ | -------------- |
-| GET    | `/users`     | Get all users  |
-| GET    | `/users/:id` | Get user by ID |
-| POST   | `/users`     | Create user    |
+| Method | Endpoint                   | Description                  |
+| ------ | -------------------------  | ---------------------------- |
+| GET    | `/users`                   | Get all users                |
+| GET    | `/users/:id`               | Get user by ID               |
+| GET    | `/users/:id/reservations`  | Get reservations for a user  |
+| POST   | `/users`                   | Create user                  |
 
 ---
 
@@ -96,75 +87,217 @@ npm start
 | ------ | ------------------------- | --------------------------- |
 | GET    | `/rooms`                  | Get all rooms               |
 | GET    | `/rooms/:id`              | Get room by ID              |
-| POST   | `/rooms`                  | Create room                 |
 | GET    | `/rooms/:id/reservations` | Get reservations for a room |
+| POST   | `/rooms`                  | Create room                 |
 
 ---
 
 ### Reservations
 
-| Method | Endpoint            | Description                     |
-| ------ | ------------------- | ------------------------------- |
-| GET    | `/reservations`     | Get all reservations            |
-| GET    | `/reservations/:id` | Get reservation by ID           |
-| POST   | `/reservations`     | Create reservation              |
-| DELETE | `/reservations/:id` | Cancel reservation (only owner) |
+| Method | Endpoint                              | Description                                      |
+| ------ | ------------------------------------- | ------------------------------------------------ |
+| GET    | `/reservations`                       | Get all reservations                             |
+| GET    | `/reservations?startTime=&endTime=`   | Filter all reservations with startDate/ endDate  |
+| GET    | `/reservations/:id`                   | Get reservation by ID                            |
+| POST   | `/reservations`                       | Create reservation                               |
+| PATCH  | `/reservations/:id`                   | Modify reservation (only owner)                  |
+| DELETE | `/reservations/:id`                   | Cancel reservation (only owner)                  |
 
 ---
 
-## 🧪 Seed Data
+## Object type structures
 
-The application starts with predefined in-memory data for easier testing:
+### Reservation
 
-### Users
-
-* `u1` – Alice
-* `u2` – Bob
-
-### Rooms
-
-* `room1` – Conference Room A
-* `room2` – Conference Room B
-
-### Reservations
-
-* Future-dated reservations (year 2026)
-* No overlapping reservations
+| Name          | Type    | Description                                    |
+| -----------   | ------- | --------------------------------------------   |
+| id            | string  | reservation ID                                 | 
+| createdById   | string  | user ID who created reservation                |
+| roomId        | string  | room ID                                        |
+| startTime     | string  | UTC starting time of reservation               |
+| endTime       | string  | UTC ending time of reservation                 |
+| createdAt     | string  | UTC time of when reservation was created       |
+| lastUpdatedAt | string  | UTC time of reservation last has been updated  |
+| title         | string  | title of the reservation (optional)            |
 
 ---
 
-## 📝 Example Reservation Payload
+### User
+
+| Name          | Type    | Description                                    |
+| -----------   | ------- | --------------------------------------------   |
+| id            | string  | user ID                                        | 
+| fullName      | string  | users name                                     |
+| email         | string  | users email                                    |
+| createdAt     | string  | UTC time of when reservation was created       |
+| lastUpdatedAt | string  | UTC time of reservation last has been updated  |
+
+---
+
+### Room
+
+| Name          | Type    | Description                                    |
+| -----------   | ------- | --------------------------------------------   |
+| id            | string  | room ID                                        | 
+| name          | string  | rooma name                                     |
+| createdAt     | string  | UTC time of when reservation was created       |
+| lastUpdatedAt | string  | UTC time of reservation last has been updated  |
+
+---
+
+## Example Requests
+
+### GET /reservations
+Get all reservations and with query parameters return a filtered list
+`startTime` and `endTime` are optional query parameters
+
+### POST /reservations
+Create a new request
+`createdById`, `roomId`, `startTime` and `endTime` are required in request body
+
+```json
+POST /reservations
+{
+    "createdById": "user1",
+    "roomId": "room1",
+    "startTime": "2026-02-04T09:00:00",
+    "endTime": "2026-02-04T10:00:00",
+    "title": "Sprint planning"
+}
+
+Response
+{
+    "id": "77a28ec8-06c6-4d08-8149-5ba910f651ce",
+    "createdById": "user1",
+    "roomId": "room1",
+    "startTime": "2026-02-04T07:00:00.000Z",
+    "endTime": "2026-02-04T08:00:00.000Z",
+    "title": "Sprint planning",
+    "createdAt": "2026-01-30T15:49:50.628Z",
+    "lastUpdatedAt": "2026-01-30T15:49:50.628Z"
+}
+```
+
+### PATCH /reservations/res2
+Modify existing reservation
+`userId` is required in request body
 
 ```json
 {
-  "id": "res3",
-  "userId": "u1",
-  "roomId": "room1",
-  "startTime": "2026-01-01T13:00:00Z",
-  "endTime": "2026-01-01T14:00:00Z"
+    "userId": "user2",
+    "startTime": "2026-01-31T10:00:00",
+    "endTime": "2026-01-31T11:30:00",
+    "title": "Morning meeting"
 }
+
+Response
+{
+    "id": "res2",
+    "createdById": "user2",
+    "roomId": "room2",
+    "startTime": "2026-02-03T08:00:00.000Z",
+    "endTime": "2026-02-03T09:30:00.000Z",
+    "createdAt": "2026-01-30T13:00:00Z",
+    "lastUpdatedAt": "2026-01-30T15:56:06.323Z",
+    "title": "Morning meeting"
+}
+```
+
+### DELETE /reservations/res2
+Delete reservation (only creator can delete it)
+`userId` is required in request body
+
+```json
+{
+    "userId": "user2"
+}
+```
+
+### POST /users
+Create new user
+`fullName` and `email` are required in request body
+
+```json
+{
+    "fullName": "Tiina Lumi",
+    "email": "tiina.lumi@mail.com"
+}
+
+Response
+{
+    "id": "189a6d9f-75f3-470d-ba50-d7f33b1de58f",
+    "fullName": "Tiina Lumi",
+    "email": "tiina.lumi@mail.com",
+    "createdAt": "2026-01-30T16:03:40.925Z",
+    "lastUpdatedAt": "2026-01-30T16:03:40.925Z"
+}
+```
+
+### POST /rooms
+Create new room
+`name` is required in request body
+
+```json
+{
+    "name": "Conference room"
+}
+
+Response
+{
+    "id": "761a682d-0eb9-4847-9211-37031f60e422",
+    "name": "Conference room",
+    "createdAt": "2026-01-30T18:06:17.921Z",
+    "lastUpdatedAt": "2026-01-30T18:06:17.921Z"
+}
+```
+
+## Example bad requests
+
+### 400 Bad request
+```json
+POST /reservations
+{
+    "createdById": "user1",
+    "roomId": "room1",
+    "startTime": "2026-01-29T09:00:00",
+    "endTime": "2026-01-29T10:00:00"
+}
+
+Message: Cannot create reservation in the past
+```
+
+### 403 Forbidden
+```json
+DELETE /reservations/res1
+{
+    "userId": "user2"
+}
+
+Message: User not allowed to cancel this reservation
+```
+
+### 404 Not found
+```json
+GET /reservations/res11
+
+Message: Reservation not found
+```
+
+### 409 Conflict
+```json
+POST /reservations
+{
+    "createdById": "user1",
+    "roomId": "room2",
+    "startTime": "2026-02-03T15:30:00",
+    "endTime": "2026-02-03T16:00:00"
+}
+
+Message: Room already reserved for that time
 ```
 
 ---
 
-## ⚠️ Notes & Limitations
-
-* Data is stored **in memory** — restarting the server resets everything
-* No authentication middleware (userId is passed in request body)
-* Designed for learning, testing, and demos
-
----
-
-## 🔮 Possible Improvements
-
-* Authentication & authorization
-* Persistent database (PostgreSQL, MongoDB)
-* Validation (Zod / Joi)
-* UUID generation
-* Unit & integration tests
-
----
-
-## 📄 License
+## License
 
 MIT
