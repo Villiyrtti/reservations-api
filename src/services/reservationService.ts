@@ -29,6 +29,10 @@ export const ReservationService = {
     return [];
   },
 
+  /**
+   * Create a new reservation
+   * Handle overlapping with other resvervations
+   */
   create: (createdById: string, roomId: string, startTime: string, endTime: string, title?: string) => {
     const newStartTime = validateDate(startTime);
     const newEndTime = validateDate(endTime);
@@ -72,6 +76,11 @@ export const ReservationService = {
     return newReservation;
   },
 
+  /**
+   * Modify existing reservation
+   * Handle overlapping with other resvervations
+   * Only change given request parameters in the request
+   */
   modifyReservation: (reservationId: string, userId: string, roomId?: string, startTime?: string, endTime?: string, title?: string) => {
     const matchingReservation = reservations.find((reservation) => reservation.id === reservationId);
     const now = new Date();
