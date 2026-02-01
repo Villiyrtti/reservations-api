@@ -196,7 +196,7 @@ GET /reservations?startTime=2026-01-31
 ```json
 POST /reservations
 {
-    "createdById": "user1",
+    "userId": "user1",
     "roomId": "room1",
     "startTime": "2026-02-04T09:00:00",
     "endTime": "2026-02-04T10:00:00",
