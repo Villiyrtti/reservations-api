@@ -1,7 +1,7 @@
-import { Reservation, ErrorResponse } from "../models/types.js";
 import { v4 as uuid } from 'uuid';
 import { validateDate, isOverlapping } from "../utils.js";
 import { reservations } from "../database/data.js";
+import { Reservation, ErrorResponse, CreateReservation, ModifyReservation } from "../models/types.js";
 
 export const ReservationService = {
   getAll: () => reservations,
@@ -33,7 +33,7 @@ export const ReservationService = {
    * Create a new reservation
    * Handle overlapping with other resvervations
    */
-  create: (createdById: string, roomId: string, startTime: Date | string | number, endTime: Date | string | number, title?: string) => {
+  createReservation: ({ userId, roomId, startTime, endTime, title }: CreateReservation) => {
     const newStartTime = validateDate(startTime);
     const newEndTime = validateDate(endTime);
     const now = new Date();
@@ -64,7 +64,7 @@ export const ReservationService = {
 
     const newReservation: Reservation = {
       id: uuid(),
-      createdById,
+      createdById: userId,
       roomId,
       startTime: newStartTime.toISOString(),
       endTime: newEndTime.toISOString(),
@@ -81,7 +81,7 @@ export const ReservationService = {
    * Handle overlapping with other resvervations
    * Only change given request parameters in the request
    */
-  modifyReservation: (reservationId: string, userId: string, roomId?: string, startTime?: Date | string | number, endTime?: Date | string | number, title?: string) => {
+  modifyReservation: ({ reservationId, userId, roomId, startTime, endTime, title }: ModifyReservation) => {
     const matchingReservation = reservations.find((reservation) => reservation.id === reservationId);
     const now = new Date();
 
@@ -142,7 +142,7 @@ export const ReservationService = {
     return modifiedReservation;
   },
 
-  cancel: (reservationId: string, userId: string) => {
+  cancelReservation: (reservationId: string, userId: string) => {
     const index = reservations.findIndex(reservation => reservation.id === reservationId);
 
     if (index === -1) {

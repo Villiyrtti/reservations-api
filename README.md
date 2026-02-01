@@ -223,8 +223,8 @@ Response
 PATCH /reservations/res2
 {
     "userId": "user2",
-    "startTime": "2026-01-31T10:00:00",
-    "endTime": "2026-01-31T11:30:00",
+    "startTime": "2026-02-03T10:00:00",
+    "endTime": "2026-02-03T11:30:00",
     "title": "Morning meeting"
 }
 

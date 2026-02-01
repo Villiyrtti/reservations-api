@@ -2,23 +2,11 @@ import { Request, Response } from "express";
 import { UserService } from "../services/userService.js";
 import { RoomService } from "../services/roomService.js";
 import { ReservationService } from "../services/reservationService.js";
-import { ByIdRequest, ErrorResponse } from "../models/types.js";
+import { ByIdRequest, ErrorResponse, CreateReservation, ModifyReservation } from "../models/types.js";
 
 type CancelRequest = Request<{ id: string }, any, any, { userId: string }>
-type CreateReservationRequest = Request<any, any, {
-  createdById: string;
-  roomId: string;
-  startTime: Date | string | number;
-  endTime: Date | string | number;
-  title?: string;
-}>;
-type ModifyReservationRequest = Request<{ id: string }, any, {
-  userId: string;
-  roomId?: string;
-  startTime?: Date | string | number;
-  endTime?: Date | string | number;
-  title?: string;
-}>;
+type CreateReservationRequest = Request<any, any, CreateReservation>;
+type ModifyReservationRequest = Request<{ id: string }, any, ModifyReservation>;
 
 export const ReservationController = {
   getAll: (req: Request<any, any, any, { startTime?: string, endTime?: string }>, res: Response) => {
@@ -44,13 +32,13 @@ export const ReservationController = {
     res.json(reservation);
   },
 
-  create: (req: CreateReservationRequest, res: Response) => {
-    const { createdById, roomId, startTime, endTime, title } = req.body;
-    if (!createdById || !roomId || !startTime || !endTime) {
+  createReservation: (req: CreateReservationRequest, res: Response) => {
+    const { userId, roomId, startTime, endTime, title } = req.body;
+    if (!userId || !roomId || !startTime || !endTime) {
       return res.status(400).send("Missing fields");
     };
 
-    if (!UserService.getById(createdById) || !RoomService.getById(roomId)) {
+    if (!UserService.getById(userId) || !RoomService.getById(roomId)) {
       return res.status(404).send("User or room not found");
     };
 
@@ -59,20 +47,20 @@ export const ReservationController = {
     };
 
     try {
-      const reservation = ReservationService.create(
-        createdById,
+      const reservation = ReservationService.createReservation({
+        userId,
         roomId,
         startTime,
         endTime,
         title
-      );
+      });
       res.status(201).json(reservation);
     } catch (error: ErrorResponse | any) {
       res.status(error.status? error.status : 400).send(error.message);
     }
   },
 
-  modifyReservationById: (req: ModifyReservationRequest, res: Response) => {
+  modifyReservation: (req: ModifyReservationRequest, res: Response) => {
     const reservationId = req.params.id;
     const { userId, roomId, startTime, endTime, title } = req.body;
 
@@ -81,26 +69,30 @@ export const ReservationController = {
     }
 
     try {
-      const modifiedReservation = ReservationService.modifyReservation(
+      const modifiedReservation = ReservationService.modifyReservation({
         reservationId,
         userId,
         roomId,
         startTime,
         endTime,
         title
-      );
+      });
       res.status(200).json(modifiedReservation);
     } catch (error: ErrorResponse | any) {
       res.status(error.status? error.status : 400).send(error.message);
     }
   },
 
-  cancel: (req: CancelRequest, res: Response) => {
+  cancelReservation: (req: CancelRequest, res: Response) => {
     const reservationId = req.params.id;
     const userId = req.body.userId;
 
+    if (!userId) {
+      return res.status(400).send("Missing userId field");
+    }
+  
     try {
-      ReservationService.cancel(reservationId, userId);
+      ReservationService.cancelReservation(reservationId, userId);
       res.status(204).send();
     } catch (error: ErrorResponse | any) {
       res.status(error.status? error.status : 400).send(error.message);
