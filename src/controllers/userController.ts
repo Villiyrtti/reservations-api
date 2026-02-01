@@ -30,6 +30,10 @@ export const UserController = {
       return res.status(400).send("Missing fields");
     };
 
+    if ([fullName, email].some((property: any) => typeof property !== 'string')) {
+      return res.status(400).send("Invalid fullName or email");
+    };
+
     const user = UserService.create(fullName, email);
     res.status(201).json(user);
   }

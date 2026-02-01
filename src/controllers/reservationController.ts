@@ -8,15 +8,15 @@ type CancelRequest = Request<{ id: string }, any, any, { userId: string }>
 type CreateReservationRequest = Request<any, any, {
   createdById: string;
   roomId: string;
-  startTime: string;
-  endTime: string;
+  startTime: Date | string | number;
+  endTime: Date | string | number;
   title?: string;
 }>;
 type ModifyReservationRequest = Request<{ id: string }, any, {
   userId: string;
   roomId?: string;
-  startTime?: string;
-  endTime?: string;
+  startTime?: Date | string | number;
+  endTime?: Date | string | number;
   title?: string;
 }>;
 
@@ -52,6 +52,10 @@ export const ReservationController = {
 
     if (!UserService.getById(createdById) || !RoomService.getById(roomId)) {
       return res.status(404).send("User or room not found");
+    };
+
+    if (title && typeof title !== 'string') {
+      return res.status(400).send("Invalid title");
     };
 
     try {

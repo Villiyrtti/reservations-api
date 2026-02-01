@@ -25,6 +25,10 @@ export const RoomController = {
       return res.status(400).send("Missing fields");
     };
 
+    if (typeof name !== 'string') {
+      return res.status(400).send("Invalid name");
+    };
+  
     const room = RoomService.create(name);
     res.status(201).json(room);
   },

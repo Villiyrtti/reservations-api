@@ -4,7 +4,7 @@ const isOverlapping = (newStart: Date, newEnd: Date, otherStart: Date, otherEnd:
 };
 
 // Check for valid dates
-const validateDate = (date: string): Date | null => {
+const validateDate = (date: Date | string | number): Date | null => {
     const newDate = new Date(date);
     if(isNaN(newDate.getTime())) {
         return null;

@@ -33,7 +33,7 @@ export const ReservationService = {
    * Create a new reservation
    * Handle overlapping with other resvervations
    */
-  create: (createdById: string, roomId: string, startTime: string, endTime: string, title?: string) => {
+  create: (createdById: string, roomId: string, startTime: Date | string | number, endTime: Date | string | number, title?: string) => {
     const newStartTime = validateDate(startTime);
     const newEndTime = validateDate(endTime);
     const now = new Date();
@@ -81,7 +81,7 @@ export const ReservationService = {
    * Handle overlapping with other resvervations
    * Only change given request parameters in the request
    */
-  modifyReservation: (reservationId: string, userId: string, roomId?: string, startTime?: string, endTime?: string, title?: string) => {
+  modifyReservation: (reservationId: string, userId: string, roomId?: string, startTime?: Date | string | number, endTime?: Date | string | number, title?: string) => {
     const matchingReservation = reservations.find((reservation) => reservation.id === reservationId);
     const now = new Date();
 
@@ -107,7 +107,7 @@ export const ReservationService = {
     const modifiedEnd = endTime && validateDate(endTime) || new Date(matchingReservation.endTime);
 
     if ((startTime && !validateDate(startTime)) || (endTime && !validateDate(endTime)) || modifiedStart > modifiedEnd) {
-      throw new Error("Invalid date parameters");
+      throw new Error("Invalid time range");
     };
 
     if (modifiedStart < now) {
